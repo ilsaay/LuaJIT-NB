@@ -1,0 +1,35 @@
+name: Build LuaJIT
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:  # 允许手动触发工作流
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
+
+      - name: Build LuaJIT
+        run: |
+          cd luajit
+          make
+          make install PREFIX=$HOME/luajit
+
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: luajit-build
+          path: $HOME/luajit
